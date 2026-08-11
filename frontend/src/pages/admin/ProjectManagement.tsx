@@ -6,26 +6,7 @@ import API from "../../services/api";
 import toast from "react-hot-toast";
 import { FiPlus, FiAlertCircle, FiEdit2, FiTrash2 } from "react-icons/fi";
 
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-}
-
-interface Project {
-  _id: string;
-  name: string;
-  description: string;
-  techStack: string[];
-  methodology: string;
-  priority: "low" | "medium" | "high";
-  status: "planning" | "active" | "completed";
-  projectManager?: User;
-  assignedEmployees: User[];
-  startDate?: string;
-  endDate?: string;
-}
+import type { User, Project } from "../../types";
 
 const projectSchema = z.object({
   name: z.string().min(2, "Project name must be at least 2 characters"),

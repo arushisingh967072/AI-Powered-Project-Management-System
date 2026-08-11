@@ -14,6 +14,8 @@ import sprintRoutes from "./routes/sprintRoutes";
 import taskRoutes from "./routes/taskRoutes";
 import bugRoutes from "./routes/bugRoutes";
 import messageRoutes from "./routes/messageRoutes";
+import searchRoutes from "./routes/searchRoutes";
+import analyticsRoutes from "./routes/analyticsRoutes";
 
 
 import { errorHandler } from "./middlewares/errorHandler";
@@ -82,6 +84,10 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/bugs", bugRoutes);
 
 app.use("/api/messages", messageRoutes);
+
+app.use("/api/search", searchRoutes);
+
+app.use("/api/analytics", analyticsRoutes);
 
 /* ===========================
    Health Check

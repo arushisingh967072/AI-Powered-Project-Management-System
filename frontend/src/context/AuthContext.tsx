@@ -1,18 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import API from "../services/api";
 import { signInWithGoogle } from "../services/firebaseAuth";
-
-export interface User {
-  _id: string;
-  name: string;
-  email: string;
-  role: "admin" | "project_manager" | "employee";
-  phone?: string;
-  department?: string;
-  experience?: number;
-  skills?: string[];
-  profilePicture?: string;
-}
+import type { User } from "../types";
 
 interface AuthContextType {
   user: User | null;

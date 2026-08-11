@@ -5,6 +5,7 @@ import * as z from "zod";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
+import { FiTrendingUp } from "react-icons/fi";
 
 const signupSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -92,8 +93,8 @@ const Signup: React.FC = () => {
       <div className="w-full max-w-lg glass-card rounded-2xl p-8 z-10 animate-fade-in my-8">
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex h-12 w-12 rounded-xl bg-blue-600/20 items-center justify-center text-2xl mb-3">
-            🚀
+          <div className="inline-flex h-12 w-12 rounded-xl bg-blue-600/20 items-center justify-center mb-3">
+            <FiTrendingUp size={20} className="text-blue-400" />
           </div>
 
           <h2 className="text-2xl font-bold bg-linear-to-r from-white to-gray-400 bg-clip-text text-transparent">

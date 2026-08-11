@@ -17,7 +17,7 @@ export const getAdminStats = async (
     const totalEmployees = await User.countDocuments({ role: "employee" });
     const totalManagers = await User.countDocuments({ role: "project_manager" });
     const totalProjects = await Project.countDocuments({});
-    const activeProjects = await Project.countDocuments({ status: "active" });
+    const activeProjects = await Project.countDocuments({ status: { $in: ["planning", "active"] } });
     const completedProjects = await Project.countDocuments({ status: "completed" });
 
     // Available employees = employees not assigned to any 'active' or 'planning' project

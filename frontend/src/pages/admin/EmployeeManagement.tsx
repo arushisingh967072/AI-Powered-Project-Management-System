@@ -7,16 +7,7 @@ import API from "../../services/api";
 import toast from "react-hot-toast";
 import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
 
-interface Employee {
-  _id: string;
-  name: string;
-  email: string;
-  role: "admin" | "project_manager" | "employee";
-  phone?: string;
-  department?: string;
-  experience?: number;
-  skills: string[];
-}
+import type { User as Employee } from "../../types";
 
 const employeeSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),

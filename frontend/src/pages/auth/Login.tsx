@@ -5,6 +5,8 @@ import * as z from "zod";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
+import { FiZap } from "react-icons/fi";
+import { FcGoogle } from "react-icons/fc";
 
 const loginSchema = z.object({
   email: z
@@ -99,8 +101,8 @@ const Login: React.FC = () => {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex h-12 w-12 rounded-xl bg-blue-600/20 items-center justify-center text-2xl mb-3">
-            ⚡
+          <div className="inline-flex h-12 w-12 rounded-xl bg-blue-600/20 items-center justify-center mb-3">
+            <FiZap size={20} className="text-blue-400" />
           </div>
 
           <h2 className="text-2xl font-bold bg-linear-to-r from-white to-gray-400 bg-clip-text text-transparent">
@@ -222,7 +224,7 @@ const Login: React.FC = () => {
             <div className="h-5 w-5 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
           ) : (
             <>
-              <span>🌐</span>
+              <FcGoogle size={18} />
               Continue with Google
             </>
           )}

@@ -10,15 +10,7 @@ import {
   FiArrowRight,
 } from "react-icons/fi";
 
-interface Project {
-  _id: string;
-  name: string;
-  description: string;
-  priority: string;
-  status: string;
-  projectManager?: { name: string };
-  assignedEmployees: any[];
-}
+import type { Project } from "../../types";
 
 interface TaskBugSummary {
   tasksCount: number;

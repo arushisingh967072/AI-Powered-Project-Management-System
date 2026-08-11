@@ -4,15 +4,7 @@ import API from "../../services/api";
 import toast from "react-hot-toast";
 import { FiArrowRight } from "react-icons/fi";
 
-interface Project {
-  _id: string;
-  name: string;
-  description: string;
-  status: string;
-  priority: string;
-  techStack: string[];
-  assignedEmployees: any[];
-}
+import type { Project } from "../../types";
 
 const PMDashboard: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
