@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import API from "../services/api";
+import { signInWithGoogle } from "../services/firebaseAuth";
 
 export interface User {
   _id: string;
@@ -16,11 +17,20 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  googleLogin: (email: string, name: string, googleId: string, profilePicture?: string) => Promise<void>;
+
+  login: (
+    email: string,
+    password: string
+  ) => Promise<void>;
+
+  googleLogin: () => Promise<void>;
+
   signup: (userData: any) => Promise<void>;
+
   logout: () => Promise<void>;
+
   updateProfile: (userData: any) => Promise<void>;
+
   checkSession: () => Promise<void>;
 }
 
@@ -76,21 +86,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const googleLogin = async (email: string, name: string, googleId: string, profilePicture?: string) => {
-    setLoading(true);
-    try {
-      const response = await API.post("/auth/google", { email, name, googleId, profilePicture });
-      if (response.data.success) {
-        setUser(response.data.user);
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-      }
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || "Google auth failed");
-    } finally {
-      setLoading(false);
+  const googleLogin = async () => {
+  setLoading(true);
+
+  try {
+    // Sign in with Google using Firebase
+    const { idToken } = await signInWithGoogle();
+
+    // Send Firebase ID token to backend
+    const response = await API.post("/auth/google", {
+      idToken,
+    });
+
+    if (response.data.success) {
+      setUser(response.data.user);
+
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response.data.user)
+      );
     }
-  };
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Google authentication failed"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   const signup = async (userData: any) => {
     setLoading(true);

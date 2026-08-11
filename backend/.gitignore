@@ -14,13 +14,16 @@ node_modules/
 dist/
 dist-ssr/
 
-# Local files
-*.local
-
 # Environment variables
 .env
 .env.*
 !.env.example
+
+# Firebase Admin credentials
+firebase-service-account.json
+
+# Local files
+*.local
 
 # Editor directories and files
 .vscode/*

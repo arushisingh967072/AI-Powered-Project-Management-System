@@ -2,9 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import User, { IUser } from "../models/User";
 
-// Extend Express Request to include user
+// Extend Express Request to include authenticated user
 export interface AuthRequest extends Request {
   user?: IUser;
+}
+
+interface JwtPayload {
+  id: string;
+  email?: string;
+  role?: string;
 }
 
 export const authenticate = async (
@@ -13,15 +19,27 @@ export const authenticate = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    let token = "";
+    const secret = process.env.JWT_SECRET;
 
-    // Check authorization header
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
-    ) {
-      token = req.headers.authorization.split(" ")[1];
-    } else if (req.cookies && req.cookies.token) {
+    if (!secret) {
+      res.status(500).json({
+        success: false,
+        message: "JWT secret is not configured",
+      });
+      return;
+    }
+
+    let token: string | undefined;
+
+    // 1. Check Authorization header
+    const authHeader = req.headers.authorization;
+
+    if (authHeader?.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
+    }
+
+    // 2. Fallback to cookie
+    if (!token && req.cookies?.token) {
       token = req.cookies.token;
     }
 
@@ -33,12 +51,20 @@ export const authenticate = async (
       return;
     }
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
-      id: string;
-    };
+    // Verify JWT
+    const decoded = jwt.verify(token, secret) as JwtPayload;
 
+    if (!decoded.id) {
+      res.status(401).json({
+        success: false,
+        message: "Invalid authentication token",
+      });
+      return;
+    }
+
+    // Get latest user data from database
     const user = await User.findById(decoded.id);
+
     if (!user) {
       res.status(401).json({
         success: false,
@@ -47,7 +73,9 @@ export const authenticate = async (
       return;
     }
 
+    // Attach authenticated user to request
     req.user = user;
+
     next();
   } catch (error) {
     res.status(401).json({
@@ -57,15 +85,29 @@ export const authenticate = async (
   }
 };
 
+// Role-based authorization
 export const authorize = (...roles: string[]) => {
-  return (req: AuthRequest, res: Response, next: NextFunction): void => {
-    if (!req.user || !roles.includes(req.user.role)) {
-      res.status(403).json({
+  return (
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ): void => {
+    if (!req.user) {
+      res.status(401).json({
         success: false,
-        message: `Role (${req.user?.role || "none"}) is not authorized to access this resource`,
+        message: "Authentication required",
       });
       return;
     }
+
+    if (!roles.includes(req.user.role)) {
+      res.status(403).json({
+        success: false,
+        message: `Role (${req.user.role}) is not authorized to access this resource`,
+      });
+      return;
+    }
+
     next();
   };
 };
