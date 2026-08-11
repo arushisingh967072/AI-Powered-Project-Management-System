@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   createBrowserRouter,
   RouterProvider,
@@ -29,6 +30,7 @@ import {
 
 import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
+import VerifyOTP from "../pages/auth/VerifyOTP";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import VerifyResetOTP from "../pages/auth/VerifyResetOTP";
 import ResetPassword from "../pages/auth/ResetPassword";
@@ -409,6 +411,11 @@ const router = createBrowserRouter([
     path: "/signup",
     element: <Signup />,
   },
+
+  {
+  path: "/verify-otp",
+  element: <VerifyOTP />,
+},
 
   // Forgot Password - Public
   {
