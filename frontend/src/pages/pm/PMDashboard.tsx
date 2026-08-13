@@ -56,24 +56,22 @@ const PMDashboard: React.FC = () => {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <span
-                    className={`px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider ${
-                      proj.priority === "high"
+                    className={`px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider ${proj.priority === "high"
                         ? "bg-red-950/40 text-red-400 border border-red-900/40"
                         : proj.priority === "medium"
-                        ? "bg-yellow-950/40 text-yellow-400 border border-yellow-900/30"
-                        : "bg-blue-950/40 text-blue-400 border border-blue-900/30"
-                    }`}
+                          ? "bg-yellow-950/40 text-yellow-400 border border-yellow-900/30"
+                          : "bg-blue-950/40 text-blue-400 border border-blue-900/30"
+                      }`}
                   >
                     {proj.priority} Priority
                   </span>
                   <span
-                    className={`px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider ${
-                      proj.status === "completed"
+                    className={`px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider ${proj.status === "completed"
                         ? "bg-emerald-950/40 text-emerald-400 border border-emerald-900/40"
                         : proj.status === "active"
-                        ? "bg-blue-950/40 text-blue-400 border border-blue-900/40"
-                        : "bg-gray-800 text-gray-400 border border-gray-700"
-                    }`}
+                          ? "bg-blue-950/40 text-blue-400 border border-blue-900/40"
+                          : "bg-gray-800 text-gray-400 border border-gray-700"
+                      }`}
                   >
                     {proj.status}
                   </span>
@@ -96,12 +94,12 @@ const PMDashboard: React.FC = () => {
 
               <div className="pt-3 border-t border-[#1e2e4f]/15">
                 <Link
-  to={`/project/${proj._id}`}
-  className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow-md transition-all cursor-pointer"
->
-  <span>Open Project Workspace</span>
-  <FiArrowRight size={14} />
-</Link>
+                  to={`/project/${proj._id}`}
+                  className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow-md transition-all cursor-pointer"
+                >
+                  <span>Open Project Workspace</span>
+                  <FiArrowRight size={14} />
+                </Link>
               </div>
             </div>
           ))

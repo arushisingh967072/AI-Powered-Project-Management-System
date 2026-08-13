@@ -104,3 +104,48 @@ Expected response:
 }
 
 Phir Login page par redirect hoga.
+
+
+                    FRONTEND
+                       |
+              React + TypeScript
+                       |
+          -------------------------
+          |           |           |
+       Project      Tasks       Bugs
+          |           |           |
+          ------------|------------
+                       |
+                  AI Buttons
+                       |
+             POST /api/ai/...
+                       |
+                    BACKEND
+                       |
+              Express + TypeScript
+                       |
+        -----------------------------
+        |             |             |
+     Project       Task/Bug      AI Service
+     Service       Services          |
+        |             |              |
+        -------- MongoDB              |
+                                      |
+                               OpenAI API
+                                      |
+                                      ↓
+                              Structured JSON
+                                      |
+                                      ↓
+                                  Backend
+                                      |
+                                      ↓
+                                   React
+                                      |
+                                      ↓
+                              AI Generated UI
+
+
+                              ........
+
+                              

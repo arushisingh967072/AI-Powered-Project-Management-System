@@ -5,6 +5,7 @@ import * as z from "zod";
 import API from "../../services/api";
 import toast from "react-hot-toast";
 import { FiPlus, FiAlertCircle, FiEdit2, FiTrash2 } from "react-icons/fi";
+import ConfirmModal from "../../components/ConfirmModal";
 
 import type { User, Project } from "../../types";
 
@@ -28,6 +29,11 @@ const ProjectManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editProject, setEditProject] = useState<Project | null>(null);
+
+  // Delete Confirm Modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     register,
@@ -125,18 +131,29 @@ const ProjectManagement: React.FC = () => {
       status: proj.status || "planning",
     });
     setModalOpen(true);
+    console.log("")
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this project? Sprints, tasks, and discussion logs will be deleted permanently.")) return;
+  const openDeleteModal = (proj: Project) => {
+    setProjectToDelete(proj);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!projectToDelete) return;
     try {
-      const response = await API.delete(`/projects/${id}`);
+      setIsDeleting(true);
+      const response = await API.delete(`/projects/${projectToDelete._id}`);
       if (response.data.success) {
         toast.success("Project deleted successfully");
+        setDeleteModalOpen(false);
+        setProjectToDelete(null);
         fetchData();
       }
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to delete project");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -280,7 +297,7 @@ const ProjectManagement: React.FC = () => {
 
                     <button
                       type="button"
-                      onClick={() => handleDelete(proj._id)}
+                      onClick={() => openDeleteModal(proj)}
                       title="Delete project"
                       className="h-8 w-8 flex items-center justify-center bg-red-950/20 hover:bg-red-950/40 border border-red-900/30 rounded-lg text-red-400 hover:text-red-300 transition-all cursor-pointer"
                     >
@@ -534,11 +551,34 @@ const ProjectManagement: React.FC = () => {
 
                 </form>
               </div>
-
             </div>
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        title="Delete Project?"
+        message={
+          <>
+            Are you sure you want to delete{" "}
+            <span className="font-semibold text-gray-200">
+              {projectToDelete?.name}
+            </span>
+            ? Sprints, tasks, and discussion logs associated with this project will be deleted permanently.
+          </>
+        }
+        confirmText="Delete Project"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isDeleting}
+        onConfirm={handleDelete}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setProjectToDelete(null);
+        }}
+      />
     </div>
   );
 };

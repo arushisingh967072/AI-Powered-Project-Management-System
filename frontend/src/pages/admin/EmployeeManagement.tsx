@@ -6,6 +6,7 @@ import * as z from "zod";
 import API from "../../services/api";
 import toast from "react-hot-toast";
 import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
+import ConfirmModal from "../../components/ConfirmModal";
 
 import type { User as Employee } from "../../types";
 
@@ -493,67 +494,29 @@ const EmployeeManagement: React.FC = () => {
           document.body
         )}
 
-      {deleteModalOpen && employeeToDelete && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl bg-[#0d1627] border border-[#1e2e4f]/50 shadow-2xl animate-fade-in">
-
-            {/* Header */}
-            <div className="flex items-start gap-4 p-6">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-950/40 border border-red-900/40">
-                <FiTrash2 className="text-red-400" size={20} />
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-gray-100">
-                  Delete Employee?
-                </h3>
-
-                <p className="mt-1 text-sm text-gray-400 leading-relaxed">
-                  Are you sure you want to delete{" "}
-                  <span className="font-semibold text-gray-200">
-                    {employeeToDelete.name}
-                  </span>
-                  ? This action cannot be undone.
-                </p>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex justify-end gap-3 border-t border-[#1e2e4f]/30 px-6 py-4">
-              <button
-                type="button"
-                onClick={() => {
-                  setDeleteModalOpen(false);
-                  setEmployeeToDelete(null);
-                }}
-                disabled={isDeleting}
-                className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700/50 text-gray-300 text-xs font-semibold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isDeleting ? (
-                  <>
-                    <div className="h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Deleting...
-                  </>
-                ) : (
-                  <>
-                    <FiTrash2 size={14} />
-                    Delete
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModalOpen && Boolean(employeeToDelete)}
+        title="Delete Employee?"
+        message={
+          <>
+            Are you sure you want to delete{" "}
+            <span className="font-semibold text-gray-200">
+              {employeeToDelete?.name}
+            </span>
+            ? This action cannot be undone.
+          </>
+        }
+        confirmText="Delete Employee"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isDeleting}
+        onConfirm={handleDelete}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setEmployeeToDelete(null);
+        }}
+      />
     </div>
   );
 };
