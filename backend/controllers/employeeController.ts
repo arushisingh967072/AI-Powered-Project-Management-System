@@ -2,6 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../middlewares/auth";
 import User from "../models/User";
 import Project from "../models/Project";
+import { sendTemporaryPasswordEmail } from "../config/brevo";
 
 /**
  * @desc    Get dashboard metrics for Administrator
@@ -94,7 +95,7 @@ export const addEmployee = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { name, email, password, role, phone, department, experience, skills } = req.body;
+    const { name, email, role, phone, department, experience, skills } = req.body;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -102,16 +103,28 @@ export const addEmployee = async (
       return;
     }
 
+    // Generate secure temporary password
+    const tempPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4).toUpperCase() + "!";
+
     const employee = await User.create({
       name,
       email,
-      password: password || "password123", // default password
+      password: tempPassword,
       role: role || "employee",
       phone,
       department,
       experience: Number(experience) || 0,
       skills: Array.isArray(skills) ? skills : skills ? skills.split(",").map((s: string) => s.trim()) : [],
+      isVerified: true,
+      shouldChangePassword: true,
     });
+
+    // Send temporary password email
+    try {
+      await sendTemporaryPasswordEmail(email, tempPassword, name);
+    } catch (emailError) {
+      console.error("Failed to send temporary password email:", emailError);
+    }
 
     res.status(201).json({
       success: true,
@@ -159,7 +172,10 @@ export const updateEmployee = async (
       user.skills = Array.isArray(skills) ? skills : skills.split(",").map((s: string) => s.trim());
     }
     if (role && req.user?.role === "admin") user.role = role;
-    if (password) user.password = password;
+    if (password) {
+      user.password = password;
+      user.shouldChangePassword = false;
+    }
 
     await user.save();
 

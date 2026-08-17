@@ -23,7 +23,7 @@ import {
 } from "react-icons/fi";
 
 const DashboardLayout: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,6 +37,39 @@ const DashboardLayout: React.FC = () => {
   const [searching, setSearching] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Change password modal states
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [updatingPassword, setUpdatingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError("");
+
+    if (newPassword.length < 6) {
+      setPasswordError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Passwords do not match.");
+      return;
+    }
+
+    setUpdatingPassword(true);
+    try {
+      await updateProfile({ password: newPassword });
+      toast.success("Password changed successfully!");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      setPasswordError(err.message || "Failed to update password. Please try again.");
+    } finally {
+      setUpdatingPassword(false);
+    }
+  };
 
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -483,6 +516,66 @@ const DashboardLayout: React.FC = () => {
           <Outlet />
         </main>
       </div>
+
+      {/* Force Change Password Modal */}
+      {user?.shouldChangePassword && (
+        <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-[#0d1627] rounded-2xl border border-[#1e2e4f]/50 shadow-2xl p-6 shadow-blue-500/5 animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="text-lg font-bold text-gray-100 mb-2">
+              Update Your Password
+            </h3>
+            <p className="text-xs text-gray-400 mb-4">
+              Your account has been created with a temporary password. For security, you must change your password before you can proceed to the dashboard.
+            </p>
+
+            {passwordError && (
+              <div className="mb-4 p-2.5 bg-red-950/40 border border-red-800/40 text-red-300 text-xs rounded-lg">
+                {passwordError}
+              </div>
+            )}
+
+            <form onSubmit={handlePasswordChange} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-1">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-3 py-2 bg-[#080d1a] border border-[#1e2e4f]/30 rounded-lg text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 mb-1">
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-3 py-2 bg-[#080d1a] border border-[#1e2e4f]/30 rounded-lg text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={updatingPassword}
+                  className="w-full py-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold rounded-lg shadow-md transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {updatingPassword ? "Updating Password..." : "Change Password"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

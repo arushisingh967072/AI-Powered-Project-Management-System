@@ -138,6 +138,18 @@ export const ReportTab: React.FC<ReportTabProps> = ({
               </table>
             </div>
           </div>
+
+          {/* AI Project Closeout Analysis */}
+          {reportData.aiSummary && (
+            <div className="border-t border-[#1e2e4f]/25 pt-6 mt-6">
+              <h5 className="font-extrabold text-indigo-400 uppercase tracking-wider text-xs mb-3 flex items-center gap-1.5">
+                ✨ AI Executive Closeout Summary
+              </h5>
+              <div className="bg-[#0b0f19]/75 border border-indigo-950/45 p-5 rounded-xl text-gray-300 text-xs whitespace-pre-line leading-relaxed font-mono">
+                {reportData.aiSummary}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="p-12 text-center text-gray-500 italic border border-dashed border-[#1e2e4f]/30 rounded-xl">

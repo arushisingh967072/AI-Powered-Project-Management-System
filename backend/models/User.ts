@@ -27,6 +27,8 @@ export interface IUser extends Document {
   resetPasswordOTPExpire?: Date;
   resetPasswordVerified?: boolean;
 
+  shouldChangePassword?: boolean;
+
   // Password comparison
   comparePassword(password: string): Promise<boolean>;
 }
@@ -121,6 +123,11 @@ const UserSchema: Schema = new Schema(
     },
 
     resetPasswordVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    shouldChangePassword: {
       type: Boolean,
       default: false,
     },

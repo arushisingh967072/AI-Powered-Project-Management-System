@@ -9,6 +9,9 @@ function App() {
         position="top-center"
         reverseOrder={false}
         gutter={12}
+        containerStyle={{
+          zIndex: 999999,
+        }}
         toastOptions={{
           duration: 3500,
 

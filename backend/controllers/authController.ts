@@ -42,6 +42,7 @@ const sendTokenResponse = (
     experience: user.experience,
     skills: user.skills,
     profilePicture: user.profilePicture,
+    shouldChangePassword: user.shouldChangePassword,
   };
 
   res
@@ -87,11 +88,8 @@ export const signup = async (
       return;
     }
 
-    // First registered user becomes admin
-    const usersCount = await User.countDocuments({});
-
-    const finalRole =
-      usersCount === 0 ? "admin" : role || "employee";
+    // Public signup is only allowed for System Administrators (admin role)
+    const finalRole = "admin";
 
     // Generate signup OTP
     const otp = Math.floor(

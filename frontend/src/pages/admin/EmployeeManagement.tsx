@@ -345,30 +345,28 @@ const EmployeeManagement: React.FC = () => {
                     {/* Password + Role */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-400 mb-1">
-                          Password {editEmployee && "(optional)"}
-                        </label>
+                      {editEmployee && (
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-400 mb-1">
+                            Password (optional)
+                          </label>
 
-                        <input
-                          type="password"
-                          placeholder={
-                            editEmployee
-                              ? "Keep existing"
-                              : "••••••••"
-                          }
-                          {...register("password")}
-                          className="w-full px-3 py-2 bg-[#080d1a] border border-[#1e2e4f]/30 rounded-lg text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-                        />
+                          <input
+                            type="password"
+                            placeholder="Keep existing"
+                            {...register("password")}
+                            className="w-full px-3 py-2 bg-[#080d1a] border border-[#1e2e4f]/30 rounded-lg text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                          />
 
-                        {errors.password && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.password.message}
-                          </p>
-                        )}
-                      </div>
+                          {errors.password && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.password.message}
+                            </p>
+                          )}
+                        </div>
+                      )}
 
-                      <div>
+                      <div className={!editEmployee ? "md:col-span-2" : ""}>
                         <label className="block text-xs font-semibold text-gray-400 mb-1">
                           Role Type
                         </label>

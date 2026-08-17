@@ -5,7 +5,7 @@ import User from "../models/User";
 import Sprint from "../models/Sprint";
 import Task from "../models/Task";
 import Bug from "../models/Bug";
-import { generateSRS } from "../services/aiService";
+import { generateSRS, generateProjectReportSummary } from "../services/aiService";
 
 /**
  * @desc    Register a new project
@@ -300,6 +300,26 @@ export const generateFinalReport = async (
       };
     });
 
+    let aiSummary = "";
+    try {
+      aiSummary = await generateProjectReportSummary(
+        project,
+        {
+          totalTasks,
+          completedTasks,
+          completionPercentage,
+          totalBugs,
+          resolvedBugs,
+          bugResolutionPercentage,
+        },
+        sprints,
+        teamPerformance
+      );
+    } catch (aiErr) {
+      console.error("AI closeout summary generation failed:", aiErr);
+      aiSummary = "AI Closeout Summary analysis could not be generated at this time.";
+    }
+
     res.status(200).json({
       success: true,
       report: {
@@ -333,6 +353,7 @@ export const generateFinalReport = async (
           endDate: s.endDate,
         })),
         teamPerformance,
+        aiSummary,
         generatedAt: new Date(),
       },
     });

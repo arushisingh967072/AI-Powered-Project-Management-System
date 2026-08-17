@@ -18,6 +18,8 @@ interface BugModalProps {
   };
   setBugForm: React.Dispatch<React.SetStateAction<any>>;
   onSubmit: (e: React.FormEvent) => void;
+  generatingAI: boolean;
+  onGenerateAI: () => void;
 }
 
 export const BugModal: React.FC<BugModalProps> = ({
@@ -28,6 +30,8 @@ export const BugModal: React.FC<BugModalProps> = ({
   bugForm,
   setBugForm,
   onSubmit,
+  generatingAI,
+  onGenerateAI,
 }) => {
   if (!isOpen) return null;
 
@@ -61,13 +65,23 @@ export const BugModal: React.FC<BugModalProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-gray-400 mb-1">
-                  Defect Description
-                </label>
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="block font-semibold text-gray-400">
+                    Defect Description
+                  </label>
+                  <button
+                    type="button"
+                    onClick={onGenerateAI}
+                    disabled={generatingAI}
+                    className="text-[10px] text-blue-400 hover:text-blue-300 font-semibold cursor-pointer flex items-center gap-1 bg-[#1e2e4f]/20 border border-[#1e2e4f]/40 px-2 py-0.5 rounded-md hover:bg-[#1e2e4f]/30 transition-all disabled:opacity-50"
+                  >
+                    {generatingAI ? "🪄 Generating..." : "✨ AI Generate"}
+                  </button>
+                </div>
                 <textarea
-                  rows={3}
-                  placeholder="Provide logs, error codes, and instructions to reproduce..."
-                  className="w-full px-3 py-2 bg-[#080d1a] border border-[#1e2e4f]/30 rounded-lg text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+                  rows={4}
+                  placeholder="Provide logs, error codes, and instructions to reproduce, or use AI Generate..."
+                  className="w-full px-3 py-2 bg-[#080d1a] border border-[#1e2e4f]/30 rounded-lg text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none font-mono text-[11px]"
                   value={bugForm.description}
                   onChange={(e) =>
                     setBugForm({

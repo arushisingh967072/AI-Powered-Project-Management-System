@@ -16,7 +16,7 @@ export const createTask = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { project, sprint, name, description, techStack, priority, assignedEmployee, deadline, generateWithAI } = req.body;
+    const { project, sprint, name, description, techStack, priority, assignedEmployee, deadline } = req.body;
 
     const proj = await Project.findById(project);
     if (!proj) {
@@ -30,17 +30,11 @@ export const createTask = async (
       return;
     }
 
-    // Optional AI description generation
-    let finalDescription = description;
-    if (generateWithAI) {
-      finalDescription = await generateTaskDescription(name, proj.techStack);
-    }
-
     const task = await Task.create({
       project,
       sprint: sprint || undefined,
       name,
-      description: finalDescription,
+      description,
       techStack: Array.isArray(techStack) ? techStack : techStack ? techStack.split(",").map((s: string) => s.trim()) : [],
       priority: priority || "medium",
       assignedEmployee: assignedEmployee || undefined,
@@ -210,6 +204,18 @@ export const updateTaskStatus = async (
       return;
     }
 
+    // Employees cannot transition to 'done', nor move tasks that are already 'done'
+    if (req.user?.role === "employee") {
+      if (status === "done") {
+        res.status(403).json({ success: false, message: "Only Project Managers can mark tasks as completed" });
+        return;
+      }
+      if (task.status === "done") {
+        res.status(403).json({ success: false, message: "Only Project Managers can reopen completed tasks" });
+        return;
+      }
+    }
+
     task.status = status;
     task.statusHistory.push({
       status,
@@ -267,6 +273,37 @@ export const deleteTask = async (
     res.status(200).json({
       success: true,
       message: "Task deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Generate task or bug description using AI
+ * @route   POST /api/tasks/generate-description
+ * @access  Private
+ */
+export const generateAIDescription = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { name, techStack } = req.body;
+    if (!name) {
+      res.status(400).json({ success: false, message: "Name/title is required to generate description summary" });
+      return;
+    }
+
+    const description = await generateTaskDescription(
+      name,
+      Array.isArray(techStack) ? techStack : techStack ? techStack.split(",").map((s: string) => s.trim()) : []
+    );
+
+    res.status(200).json({
+      success: true,
+      description,
     });
   } catch (error) {
     next(error);

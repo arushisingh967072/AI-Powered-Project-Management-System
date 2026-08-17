@@ -8,6 +8,7 @@ export interface User {
   experience?: number;
   skills?: string[];
   profilePicture?: string;
+  shouldChangePassword?: boolean;
 }
 
 export interface Project {

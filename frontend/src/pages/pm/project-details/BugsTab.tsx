@@ -1,5 +1,6 @@
 import React from "react";
 import type { Bug } from "../../../types";
+import { useAuth } from "../../../context/AuthContext";
 
 interface BugsTabProps {
   bugs: Bug[];
@@ -12,6 +13,8 @@ export const BugsTab: React.FC<BugsTabProps> = ({
   setBugModalOpen,
   setSelectedBug,
 }) => {
+  const { user } = useAuth();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -19,12 +22,14 @@ export const BugsTab: React.FC<BugsTabProps> = ({
           <h3 className="text-lg font-bold text-gray-200">Active Software Defects</h3>
           <p className="text-xs text-gray-550 mt-1">Log issues, set priorities, and track bug fixes</p>
         </div>
-        <button
-          onClick={() => setBugModalOpen(true)}
-          className="px-4 py-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold rounded-lg shadow-md transition-all cursor-pointer"
-        >
-          ➕ Log Bug Report
-        </button>
+        {user?.role !== "employee" && (
+          <button
+            onClick={() => setBugModalOpen(true)}
+            className="px-4 py-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold rounded-lg shadow-md transition-all cursor-pointer"
+          >
+            ➕ Log Bug Report
+          </button>
+        )}
       </div>
 
       {/* Bugs List Grid */}

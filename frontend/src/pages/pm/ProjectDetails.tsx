@@ -70,8 +70,36 @@ const ProjectDetails: React.FC = () => {
 
   // Form Fields State
   const [sprintForm, setSprintForm] = useState({ name: "", goal: "", startDate: "", endDate: "" });
-  const [taskForm, setTaskForm] = useState({ name: "", description: "", techStack: "", priority: "medium", assignedEmployee: "", deadline: "", sprint: "", generateWithAI: false });
+  const [taskForm, setTaskForm] = useState({ name: "", description: "", techStack: "", priority: "medium", assignedEmployee: "", deadline: "", sprint: "" });
   const [bugForm, setBugForm] = useState({ name: "", description: "", severity: "medium", priority: "medium", assignedEmployee: "", deadline: "", sprint: "" });
+
+  const [generatingAI, setGeneratingAI] = useState(false);
+
+  const handleGenerateAI = async (name: string, techStack?: string, isBug: boolean = false) => {
+    if (!name.trim()) {
+      toast.error("Please enter a title/name first to generate a summary");
+      return;
+    }
+    setGeneratingAI(true);
+    try {
+      const res = await API.post("/tasks/generate-description", {
+        name,
+        techStack: techStack || "",
+      });
+      if (res.data.success) {
+        if (isBug) {
+          setBugForm((prev: any) => ({ ...prev, description: res.data.description }));
+        } else {
+          setTaskForm((prev: any) => ({ ...prev, description: res.data.description }));
+        }
+        toast.success("AI summary generated successfully!");
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "AI summary generation failed");
+    } finally {
+      setGeneratingAI(false);
+    }
+  };
 
   const isPM = user?.role === "project_manager";
 
@@ -407,6 +435,8 @@ const ProjectDetails: React.FC = () => {
         taskForm={taskForm}
         setTaskForm={setTaskForm}
         onSubmit={handleTaskSubmit}
+        generatingAI={generatingAI}
+        onGenerateAI={() => handleGenerateAI(taskForm.name, taskForm.techStack, false)}
       />
 
       {/* Bug Modal Overlay */}
@@ -418,6 +448,8 @@ const ProjectDetails: React.FC = () => {
         bugForm={bugForm}
         setBugForm={setBugForm}
         onSubmit={handleBugSubmit}
+        generatingAI={generatingAI}
+        onGenerateAI={() => handleGenerateAI(bugForm.name, project.techStack?.join(", "), true)}
       />
 
       {/* Detail & Discussion Modal Overlay */}

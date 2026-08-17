@@ -146,10 +146,15 @@ export const DetailModal: React.FC<DetailModalProps> = ({
                         ? "Testing"
                         : "Done";
 
+                    const isEmployee = user?.role === "employee";
+                    const isDoneTask = !!(selectedTask && selectedTask.status === "done");
+                    const isButtonDisabled = !!(selectedTask && isEmployee && (st === "done" || isDoneTask));
+
                     return (
                       <button
                         type="button"
                         key={st}
+                        disabled={isButtonDisabled}
                         onClick={() =>
                           handleStatusTransition(
                             selectedTask ? selectedTask._id : selectedBug?._id || "",
@@ -157,10 +162,16 @@ export const DetailModal: React.FC<DetailModalProps> = ({
                             st
                           )
                         }
-                        className={`py-2 rounded-lg font-bold transition-all cursor-pointer border ${
+                        className={`py-2 rounded-lg font-bold transition-all border ${
                           active
                             ? "bg-blue-600 border-blue-500 text-white"
-                            : "bg-[#0b0f19] hover:bg-gray-800 border-gray-800 text-gray-400"
+                            : "bg-[#0b0f19] border-gray-800 text-gray-400"
+                        } ${
+                          isButtonDisabled
+                            ? "opacity-40 cursor-not-allowed"
+                            : active
+                            ? "cursor-pointer"
+                            : "hover:bg-gray-800 cursor-pointer"
                         }`}
                       >
                         {stLabel}
